@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.lang.System.arraycopy;
@@ -23,22 +24,26 @@ public class Nombres {
     private Nombres() throws IOException {
         for (int i = 1; i < M; i++) for (int j = 1; j < M; j++) ltab[i][j] = new ArrayList<>();
         for (int i = 1; i < M; i++) for (int j = 1; j < M; j++) X.add(new A(new Paire(i, j), i * j));
-        ltab();
+        boolean iInfj = true;
+        ltab(iInfj);
         int[][] tab = tab();
         int[] valeurs = valeurs();
         System.out.println(Arrays.toString(valeurs));
         matriceToTextFile(tab, chemin, "tab_", N);
 
-        int i = 6, j = 14;
+        int i = 18, j = 32;
         List<A> classe = classe(i, j);
         System.out.println(i * j + ": " + "NClasse=" + classe.size() + " " + classe);
 
-        int val = 84;
+        int val = i*j;
         List<A> classe2 = classe(val);
         System.out.println(classe2);
 
         for (int v : valeurs) hvaleurs.put(v, classe(v).size());
         fonctionToTextFile(hvaleurs, chemin, "hval_", N);
+
+        new Visu(classe,N);
+
     }
 
     public static void main(String[] args) throws IOException {
@@ -46,7 +51,7 @@ public class Nombres {
     }
 
     private List<A> classe(int i, int j) {
-        return ltab[i][j];
+        return  ltab[i][j];
     }
 
     private List<A> classe(int val) {
@@ -64,9 +69,8 @@ public class Nombres {
         return tab;
     }
 
-    private List<A>[][] ltab() {
-        X.forEach(a1 -> X.stream()
-                .filter(a2 -> a1.x == a2.x)
+    private List<A>[][] ltab(boolean iInfj) {
+        X.forEach(a1 -> X.stream().filter(a -> a1.p.i<=a1.p.j && iInfj).filter(a2 -> a1.x == a2.x)
                 .forEach(a2 -> ltab[a1.p.i][a1.p.j].add(new A(new Paire(a2.p.i, a2.p.j), a2.x))));
         return ltab;
     }
